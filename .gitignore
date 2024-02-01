@@ -20,6 +20,8 @@
 # Go workspace file
 go.work
 
-
 # CDK
 cdk.context.json
+
+# env file
+.env
