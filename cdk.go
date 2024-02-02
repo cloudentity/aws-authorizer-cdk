@@ -29,6 +29,7 @@ const (
 	EfsMountPath = "/mnt" + EfsApPath
 
 	EventBridgeTriggerIntervalMinutes = 1
+	S3BucketName                      = "cloudentity-aws-api-gateway-v2-beta"
 )
 
 type StackProps struct {
@@ -119,10 +120,12 @@ func createAuthorizerLambda(stack awscdk.Stack, vpc awsec2.IVpc, efsAP awsefs.Ac
 		maxHeap  = int(float64(memSize) * 0.75)
 	)
 
-	code = awslambda.Code_FromAsset(
-		jsii.String(localZip),
-		&awss3assets.AssetOptions{},
-	)
+	if localZip != "" {
+		code = getLocalCode(localZip)
+	} else {
+		code = getCodeFromS3(stack, "aws-authorizer.zip ", props.Version)
+	}
+
 	env = map[string]*string{
 		"ACP_CLIENT_ID":                    jsii.String(props.ClientID),
 		"ACP_CLIENT_SECRET":                jsii.String(props.ClientSecret),
@@ -158,22 +161,9 @@ func createSyncLambda(stack awscdk.Stack, authorizer awslambda.Function, vpc aws
 		maxHeap  = int(float64(memSize) * 0.75)
 	)
 	if localZip != "" {
-		code = awslambda.Code_FromAsset(
-			jsii.String(localZip),
-			&awss3assets.AssetOptions{},
-		)
+		code = getLocalCode(localZip)
 	} else {
-		code = awslambda.Code_FromBucket(
-			awss3.Bucket_FromBucketName(
-				stack,
-				jsii.String("S3Bucket"),
-				// TODO proper s3 bucket name
-				// maybe from context
-				jsii.String("cloudentity-aws-api-gateway-authorizer-sync"),
-			),
-			jsii.String("aws-authorizer-sync.zip"),
-			jsii.String(props.Version),
-		)
+		code = getCodeFromS3(stack, "aws-authorizer-sync.zip ", props.Version)
 	}
 	syncLambdaEnvVars := map[string]*string{
 		"ACP_CLIENT_ID":                    jsii.String(props.ClientID),
@@ -254,6 +244,25 @@ func createSyncLambda(stack awscdk.Stack, authorizer awslambda.Function, vpc aws
 	}))
 
 	return lambda
+}
+
+func getLocalCode(localPath string) awslambda.Code {
+	return awslambda.Code_FromAsset(
+		jsii.String(localPath),
+		&awss3assets.AssetOptions{},
+	)
+}
+
+func getCodeFromS3(stack awscdk.Stack, s3FileName string, s3Version string) awslambda.Code {
+	return awslambda.Code_FromBucket(
+		awss3.Bucket_FromBucketName(
+			stack,
+			jsii.String("S3Bucket"),
+			jsii.String(S3BucketName),
+		),
+		jsii.String(s3FileName),
+		jsii.String(s3Version),
+	)
 }
 
 func validateStackProps(props StackProps) error {
