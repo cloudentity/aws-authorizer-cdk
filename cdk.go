@@ -330,36 +330,37 @@ func main() {
 	app.Synth(nil)
 }
 
-func readStackProps(stack awscdk.App, props *StackProps) error {
+func readStackProps(app awscdk.App, props *StackProps) error {
 	var err error
-	props.SyncZip = readCtxParam[string](stack, "syncZip")
-	props.AuthorizerZip = readCtxParam[string](stack, "authorizerZip")
-	props.Demo = readCtxParam[bool](stack, "demo")
-	props.ClientID = readCtxParam[string](stack, "clientID")
+	props.SyncZip = readCtxParam[string](app, "syncZip")
+	props.AuthorizerZip = readCtxParam[string](app, "authorizerZip")
+	props.Demo = readCtxParam[bool](app, "demo")
+	props.ClientID = readCtxParam[string](app, "clientID")
 	// read secret from env var
 	props.ClientSecret = getEnvFromVars("ACP_CLIENT_SECRET")
-	props.IssuerURL = readCtxParam[string](stack, "issuerURL")
-	props.VpcID = readCtxParam[string](stack, "vpcID")
-	props.Version = readCtxParam[string](stack, "version")
-	props.LoggingLevel = readCtxParam[string](stack, "loggingLevel")
+	props.IssuerURL = readCtxParam[string](app, "issuerURL")
+	props.VpcID = readCtxParam[string](app, "vpcID")
+	props.Version = readCtxParam[string](app, "version")
+	props.LoggingLevel = readCtxParam[string](app, "loggingLevel")
 
-	reloadInterval := readCtxParam[string](stack, "reloadInterval")
+	reloadInterval := readCtxParam[string](app, "reloadInterval")
 	if reloadInterval != "" {
 		if props.ReloadInterval, err = time.ParseDuration(reloadInterval); err != nil {
 			return fmt.Errorf("invalid reloadInterval duration %w", err)
 		}
 	}
-	props.AnalyticsEnabled = readCtxParam[bool](stack, "analyticsEnabled")
-	props.InjectContext = readCtxParam[bool](stack, "injectContext")
-	props.EnforcementAllowUnknown = readCtxParam[bool](stack, "enforcementAllowUnknown")
-	props.HTTPClientRootCA = readCtxParam[string](stack, "httpClientRootCA")
-	props.HTTPClientInsecureSkipVerify = readCtxParam[bool](stack, "httpClientInsecureSkipVerify")
+	props.AnalyticsEnabled = readCtxParam[bool](app, "analyticsEnabled")
+	props.InjectContext = readCtxParam[bool](app, "injectContext")
+	props.EnforcementAllowUnknown = readCtxParam[bool](app, "enforcementAllowUnknown")
+	props.HTTPClientRootCA = readCtxParam[string](app, "httpClientRootCA")
+	props.HTTPClientInsecureSkipVerify = readCtxParam[bool](app, "httpClientInsecureSkipVerify")
+	props.StackName = jsii.String(readCtxParam[string](app, "stackName"))
 	return nil
 }
 
-func readCtxParam[T any](stack awscdk.App, key string) T {
+func readCtxParam[T any](app awscdk.App, key string) T {
 	var t T
-	val, ok := stack.Node().TryGetContext(jsii.String(key)).(T)
+	val, ok := app.Node().TryGetContext(jsii.String(key)).(T)
 	if !ok {
 		return t
 	}

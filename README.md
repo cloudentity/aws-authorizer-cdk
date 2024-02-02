@@ -1,12 +1,48 @@
-# Welcome to your CDK Go project!
+# Cloudentity AWS Authorizer CDK
 
-This is a blank project for CDK development with Go.
+This project provides CDK deployment for Cloudentity AWS Authorizer.
 
-The `cdk.json` file tells the CDK toolkit how to execute your app.
+## Prerequisites
 
-## Useful commands
+- CDK
+- Go
 
- * `cdk deploy`      deploy this stack to your default AWS account/region
- * `cdk diff`        compare deployed stack with current state
- * `cdk synth`       emits the synthesized CloudFormation template
- * `go test`         run unit tests
+## Deploy
+
+Run `make deploy` to deploy the stack using authorizer from S3.
+Run `make deploy-local` to deploy the stack using authorizer from local `.zip` files.
+
+## Set env variables
+
+Make sure you have required env variables set in the `.env` file
+
+```
+ACP_CLIENT_ID=xxxxx
+ACP_CLIENT_SECRET=xxxx
+ACP_ISSUER_URL=xxxx
+```
+
+If you're using SSO set
+
+```
+AWS_PROFILE=xxx
+```
+
+You can also set
+
+```
+CDK_DEPLOY_ACCOUNT=XXX
+CDK_DEPLOY_REGION=XXX
+```
+
+if you don't set those variables, `CDK_DEFAULT_ACCOUNT` and `CDK_DEPLOY_REGION` are going to be used.
+
+### Local lambda packages (without S3)
+
+If you have lambda `.zip` packages locally, set
+
+```
+LOCAL_LAMBDAS_DIR=xxxxx
+```
+
+to the directory where your lambdas `.zip` files are.
