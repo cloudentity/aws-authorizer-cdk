@@ -202,26 +202,30 @@ func createSyncLambda(stack awscdk.Stack, authorizer awslambda.Function, vpc aws
 		BatchSize: jsii.Number(1),
 	}))
 
-	lambda.Role().AttachInlinePolicy(awsiam.NewPolicy(stack, jsii.String("SyncLambdaPolicy"), &awsiam.PolicyProps{
-		Statements: &[]awsiam.PolicyStatement{
+	statements := []awsiam.PolicyStatement{
+		awsiam.NewPolicyStatement(&awsiam.PolicyStatementProps{
+			Actions: &[]*string{
+				jsii.String("apigateway:GET"),
+			},
+			Resources: &[]*string{
+				jsii.String("arn:aws:apigateway:*::/restapis/*/deployments/*"),
+				jsii.String("arn:aws:apigateway:*::/restapis/*/resources"),
+				jsii.String("arn:aws:apigateway:*::/restapis/*/authorizers"),
+				jsii.String("arn:aws:apigateway:*::/restapis/*/stages"),
+				jsii.String("arn:aws:apigateway:*::/restapis"),
+			},
+		}),
+	}
+
+	// add auto-bind authorizer permissions
+	if !props.ManuallyCreateAuthorizer {
+		statements = append(statements,
 			awsiam.NewPolicyStatement(&awsiam.PolicyStatementProps{
 				Actions: &[]*string{
 					jsii.String("lambda:AddPermission"),
 				},
 				Resources: &[]*string{
 					jsii.String("*"),
-				},
-			}),
-			awsiam.NewPolicyStatement(&awsiam.PolicyStatementProps{
-				Actions: &[]*string{
-					jsii.String("apigateway:GET"),
-				},
-				Resources: &[]*string{
-					jsii.String("arn:aws:apigateway:*::/restapis/*/deployments/*"),
-					jsii.String("arn:aws:apigateway:*::/restapis/*/resources"),
-					jsii.String("arn:aws:apigateway:*::/restapis/*/authorizers"),
-					jsii.String("arn:aws:apigateway:*::/restapis/*/stages"),
-					jsii.String("arn:aws:apigateway:*::/restapis"),
 				},
 			}),
 			awsiam.NewPolicyStatement(&awsiam.PolicyStatementProps{
@@ -239,8 +243,11 @@ func createSyncLambda(stack awscdk.Stack, authorizer awslambda.Function, vpc aws
 				Resources: &[]*string{
 					jsii.String("arn:aws:apigateway:*::/restapis/*/authorizers"),
 				},
-			}),
-		},
+			}))
+	}
+
+	lambda.Role().AttachInlinePolicy(awsiam.NewPolicy(stack, jsii.String("SyncLambdaPolicy"), &awsiam.PolicyProps{
+		Statements: &statements,
 	}))
 
 	return lambda
