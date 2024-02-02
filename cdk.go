@@ -27,6 +27,8 @@ import (
 const (
 	EfsApPath    = "/ceauthconfig"
 	EfsMountPath = "/mnt" + EfsApPath
+
+	EventBridgeTriggerIntervalMinutes = 1
 )
 
 type StackProps struct {
@@ -92,7 +94,7 @@ func Stack(scope constructs.Construct, id string, props StackProps) (awscdk.Stac
 	sqsQueue := createSQSQueue(stack)
 	createSyncLambda(stack, authorizerLambda, vpc, syncEfsAP, sqsQueue, props)
 
-	stateMachine := createStateMachine(stack, sqsQueue)
+	stateMachine := createStateMachine(stack, sqsQueue, props)
 	createEventBridgeRule(stack, stateMachine)
 
 	return stack, nil
@@ -299,10 +301,10 @@ func createSQSQueue(stack awscdk.Stack) awssqs.Queue {
 	})
 }
 
-func createStateMachine(stack awscdk.Stack, queue awssqs.Queue) awsstepfunctions.StateMachine {
+func createStateMachine(stack awscdk.Stack, queue awssqs.Queue, props StackProps) awsstepfunctions.StateMachine {
 	var (
-		seconds  = 5
-		count    = 60 / seconds
+		seconds  = int(props.ReloadInterval.Seconds())
+		count    = EventBridgeTriggerIntervalMinutes * 60 / seconds
 		sqsTasks = make([]awsstepfunctionstasks.SqsSendMessage, count)
 	)
 	for i := 0; i < count; i++ {
@@ -325,8 +327,7 @@ func createStateMachine(stack awscdk.Stack, queue awssqs.Queue) awsstepfunctions
 
 func createEventBridgeRule(stack awscdk.Stack, syncLooper awsstepfunctions.StateMachine) {
 	rule := awsevents.NewRule(stack, jsii.String("Run Step Function"), &awsevents.RuleProps{
-		// TODO configurable?
-		Schedule: awsevents.Schedule_Rate(awscdk.Duration_Minutes(jsii.Number(1))),
+		Schedule: awsevents.Schedule_Rate(awscdk.Duration_Minutes(jsii.Number(EventBridgeTriggerIntervalMinutes))),
 	})
 	rule.AddTarget(awseventstargets.NewSfnStateMachine(syncLooper, &awseventstargets.SfnStateMachineProps{}))
 }
