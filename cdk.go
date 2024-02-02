@@ -154,14 +154,13 @@ func createAuthorizerLambda(stack awscdk.Stack, vpc awsec2.IVpc, efsAP awsefs.Ac
 
 func createSyncLambda(stack awscdk.Stack, authorizer awslambda.Function, vpc awsec2.IVpc, efsAP awsefs.AccessPoint, sqsQueue awssqs.Queue, props StackProps) awslambda.Function {
 	var (
-		code     awslambda.Code
-		lambda   awslambda.Function
-		localZip = props.SyncZip
-		memSize  = 128
-		maxHeap  = int(float64(memSize) * 0.75)
+		code    awslambda.Code
+		lambda  awslambda.Function
+		memSize = 128
+		maxHeap = int(float64(memSize) * 0.75)
 	)
-	if localZip != "" {
-		code = getLocalCode(localZip)
+	if props.SyncZip != "" {
+		code = getLocalCode(props.SyncZip)
 	} else {
 		code = getCodeFromS3(stack, "aws-authorizer-sync.zip ", props.Version)
 	}
