@@ -98,7 +98,7 @@ func createAuthorizerLambda(stack awscdk.Stack, vpc awsec2.IVpc, efsAP awsefs.Ac
 		env      map[string]*string
 		localZip = props.AuthorizerZip
 		lambda   awslambda.Function
-		memSize  = 256
+		memSize  = 128
 		maxHeap  = int(float64(memSize) * 0.75)
 	)
 
