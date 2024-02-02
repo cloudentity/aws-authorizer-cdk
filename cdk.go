@@ -188,14 +188,15 @@ func createSyncLambda(stack awscdk.Stack, authorizer awslambda.Function, vpc aws
 	}
 
 	lambda = awslambda.NewFunction(stack, jsii.String("SyncLambda"), &awslambda.FunctionProps{
-		Code:        code,
-		Handler:     jsii.String("bootstrap"),
-		Runtime:     awslambda.Runtime_PROVIDED_AL2023(),
-		MemorySize:  jsii.Number(128),
-		Timeout:     awscdk.Duration_Seconds(jsii.Number(10)),
-		Environment: &syncLambdaEnvVars,
-		Vpc:         vpc,
-		Filesystem:  awslambda.FileSystem_FromEfsAccessPoint(efsAP, jsii.String(EfsMountPath)),
+		Code:                         code,
+		Handler:                      jsii.String("bootstrap"),
+		Runtime:                      awslambda.Runtime_PROVIDED_AL2023(),
+		MemorySize:                   jsii.Number(128),
+		Timeout:                      awscdk.Duration_Seconds(jsii.Number(10)),
+		Environment:                  &syncLambdaEnvVars,
+		Vpc:                          vpc,
+		Filesystem:                   awslambda.FileSystem_FromEfsAccessPoint(efsAP, jsii.String(EfsMountPath)),
+		ReservedConcurrentExecutions: jsii.Number(1),
 	})
 
 	lambda.AddEventSource(awslambdaeventsources.NewSqsEventSource(sqsQueue, &awslambdaeventsources.SqsEventSourceProps{
