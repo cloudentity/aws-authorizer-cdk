@@ -28,3 +28,8 @@ deploy:
 deploy-local-files:
 	@echo "Deploying to AWS..."
 	cdk bootstrap $(LOCAL_CONTEXT_PARAMS) && cdk deploy $(LOCAL_CONTEXT_PARAMS)
+
+.PHONY: destroy
+destroy:
+	@echo "Destroying AWS resources..."
+	cdk destroy $(CONTEXT_PARAMS)
