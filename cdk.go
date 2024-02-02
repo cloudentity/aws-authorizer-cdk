@@ -35,8 +35,8 @@ type StackProps struct {
 	SyncZip string
 	// AuthorizerZip is a path to zip file with authorizer lambda function
 	AuthorizerZip string
-	// Demo is a flag that enables demo mode
-	Demo bool
+	// When ManuallyCreateAuthorizer is set to true, the stack will configure sync lambda to skip auto-binding authorizer
+	ManuallyCreateAuthorizer bool
 	// ClientID is a client id of the client that will be used to authenticate with ACP
 	ClientID string `validate:"required"`
 	// ClientSecret is a client secret of the client that will be used to authenticate with ACP
@@ -63,7 +63,13 @@ type StackProps struct {
 	HTTPClientInsecureSkipVerify bool
 }
 
+var DefaultStackProps = StackProps{
+	LoggingLevel:   "info",
+	ReloadInterval: time.Second * 10,
+}
+
 func Stack(scope constructs.Construct, id string, props StackProps) (awscdk.Stack, error) {
+	setDefaultStackProps(&props)
 	sprops := props.StackProps
 
 	if err := validateStackProps(props); err != nil {
@@ -90,6 +96,15 @@ func Stack(scope constructs.Construct, id string, props StackProps) (awscdk.Stac
 	createEventBridgeRule(stack, stateMachine)
 
 	return stack, nil
+}
+
+func setDefaultStackProps(props *StackProps) {
+	if props.LoggingLevel == "" {
+		props.LoggingLevel = DefaultStackProps.LoggingLevel
+	}
+	if props.ReloadInterval == 0 {
+		props.ReloadInterval = DefaultStackProps.ReloadInterval
+	}
 }
 
 func createAuthorizerLambda(stack awscdk.Stack, vpc awsec2.IVpc, efsAP awsefs.AccessPoint, props StackProps) awslambda.Function {
@@ -168,6 +183,7 @@ func createSyncLambda(stack awscdk.Stack, authorizer awslambda.Function, vpc aws
 		"HTTP_CLIENT_INSECURE_SKIP_VERIFY": jsii.String(strconv.FormatBool(props.HTTPClientInsecureSkipVerify)),
 		"AWS_LOCAL_CONFIGURATION":          jsii.String(EfsMountPath),
 		"AWS_AUTHORIZER_ARN":               authorizer.FunctionArn(),
+		"AWS_AUTOBIND_AUTHORIZER":          jsii.String(strconv.FormatBool(!props.ManuallyCreateAuthorizer)),
 		"MAX_HEAP":                         jsii.String(strconv.Itoa(maxHeap)),
 	}
 
@@ -334,7 +350,7 @@ func readStackProps(app awscdk.App, props *StackProps) error {
 	var err error
 	props.SyncZip = readCtxParam[string](app, "syncZip")
 	props.AuthorizerZip = readCtxParam[string](app, "authorizerZip")
-	props.Demo = readCtxParam[bool](app, "demo")
+	props.ManuallyCreateAuthorizer = readCtxParam[bool](app, "manuallyCreateAuthorizer")
 	props.ClientID = readCtxParam[string](app, "clientID")
 	// read secret from env var
 	props.ClientSecret = getEnvFromVars("ACP_CLIENT_SECRET")
