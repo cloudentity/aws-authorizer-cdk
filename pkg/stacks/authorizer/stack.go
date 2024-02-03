@@ -18,7 +18,11 @@ const (
 	EventBridgeTriggerIntervalMinutes = 1
 )
 
-func Stack(scope constructs.Construct, id string, props StackProps) (awscdk.Stack, error) {
+type Stack struct {
+	AuthorizerLambda awslambda.Function
+}
+
+func NewStack(scope constructs.Construct, id string, props StackProps) (Stack, error) {
 	var (
 		err              error
 		sprops           awscdk.StackProps
@@ -32,7 +36,7 @@ func Stack(scope constructs.Construct, id string, props StackProps) (awscdk.Stac
 	sprops = props.StackProps
 
 	if err = validateStackProps(props); err != nil {
-		return nil, fmt.Errorf("invalid stack props %w", err)
+		return Stack{}, fmt.Errorf("invalid stack props %w", err)
 	}
 	stack = awscdk.NewStack(scope, &id, &sprops)
 
@@ -42,7 +46,9 @@ func Stack(scope constructs.Construct, id string, props StackProps) (awscdk.Stac
 	syncLambda = createSyncLambda(stack, authorizerLambda, vpc, efsAP, props)
 	triggerLambdaInIntervals(stack, syncLambda, props)
 
-	return stack, nil
+	return Stack{
+		AuthorizerLambda: authorizerLambda,
+	}, nil
 }
 
 func getVpc(stack awscdk.Stack, vpcID string) awsec2.IVpc {
