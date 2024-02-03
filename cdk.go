@@ -11,21 +11,26 @@ import (
 )
 
 func main() {
+	var (
+		err   error
+		app   awscdk.App
+		props authorizer.StackProps
+	)
 	defer jsii.Close()
 
-	app := awscdk.NewApp(nil)
-	props := authorizer.StackProps{
+	app = awscdk.NewApp(nil)
+	props = authorizer.StackProps{
 		StackProps: awscdk.StackProps{
 			Env: env(),
 		},
 	}
 
-	if err := readStackProps(app, &props); err != nil {
+	if err = readStackProps(app, &props); err != nil {
 		fmt.Printf("could not read context values %s", err)
 		return
 	}
 
-	if _, err := authorizer.Stack(app, "CloudentityAWSAuthorizer", props); err != nil {
+	if _, err = authorizer.Stack(app, "CloudentityAWSAuthorizer", props); err != nil {
 		fmt.Printf("could not create stack %s", err)
 		return
 	}
