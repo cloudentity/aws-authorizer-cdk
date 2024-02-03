@@ -8,12 +8,15 @@ HASH   = $(shell git rev-parse HEAD)
 
 STACK_NAME = CloudentityAwsAuthorizer-$(BRANCH)
 
+VERSION = 2.22.0-beta
+
 .EXPORT_ALL_VARIABLES:
 
 CONTEXT_PARAMS = \
 	-c clientID=$(ACP_CLIENT_ID) \
 	-c issuerURL=$(ACP_ISSUER_URL) \
-	-c stackName=$(STACK_NAME)
+	-c stackName=$(STACK_NAME) \
+	-c version=$(VERSION)
 
 LOCAL_CONTEXT_PARAMS =\
 	-c syncZip=$(LOCAL_LAMBDAS_DIR)aws-authorizer-sync.zip  \

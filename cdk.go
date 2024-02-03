@@ -29,7 +29,6 @@ const (
 	EfsMountPath = "/mnt" + EfsApPath
 
 	EventBridgeTriggerIntervalMinutes = 1
-	S3BucketName                      = "cloudentity-aws-api-gateway-v2-beta"
 )
 
 type StackProps struct {
@@ -64,11 +63,14 @@ type StackProps struct {
 	HTTPClientRootCA string
 	// HTTPClientInsecureSkipVerify is a flag that enables skipping HTTP client verification
 	HTTPClientInsecureSkipVerify bool
+	// S3BucketName is a name of S3 bucket
+	S3BucketName string
 }
 
 var DefaultStackProps = StackProps{
 	LoggingLevel:   "info",
 	ReloadInterval: time.Second * 10,
+	S3BucketName:   "cloudentity-aws-api-gateway-authorizer-us-east-1",
 }
 
 func Stack(scope constructs.Construct, id string, props StackProps) (awscdk.Stack, error) {
@@ -108,22 +110,24 @@ func setDefaultStackProps(props *StackProps) {
 	if props.ReloadInterval == 0 {
 		props.ReloadInterval = DefaultStackProps.ReloadInterval
 	}
+	if props.S3BucketName == "" {
+		props.S3BucketName = DefaultStackProps.S3BucketName
+	}
 }
 
 func createAuthorizerLambda(stack awscdk.Stack, vpc awsec2.IVpc, efsAP awsefs.AccessPoint, props StackProps) awslambda.Function {
 	var (
-		code     awslambda.Code
-		env      map[string]*string
-		localZip = props.AuthorizerZip
-		lambda   awslambda.Function
-		memSize  = 128
-		maxHeap  = int(float64(memSize) * 0.75)
+		code    awslambda.Code
+		env     map[string]*string
+		lambda  awslambda.Function
+		memSize = 128
+		maxHeap = int(float64(memSize) * 0.75)
 	)
 
-	if localZip != "" {
-		code = getLocalCode(localZip)
+	if props.AuthorizerZip != "" {
+		code = getLocalCode(props.AuthorizerZip)
 	} else {
-		code = getCodeFromS3(stack, "aws-authorizer.zip ", props.Version)
+		code = getCodeFromS3(stack, props, "cloudentity-aws-authorizer-v2-"+props.Version+".zip")
 	}
 
 	env = map[string]*string{
@@ -162,7 +166,7 @@ func createSyncLambda(stack awscdk.Stack, authorizer awslambda.Function, vpc aws
 	if props.SyncZip != "" {
 		code = getLocalCode(props.SyncZip)
 	} else {
-		code = getCodeFromS3(stack, "aws-authorizer-sync.zip ", props.Version)
+		code = getCodeFromS3(stack, props, "cloudentity-aws-authorizer-v2-sync-"+props.Version+".zip")
 	}
 	syncLambdaEnvVars := map[string]*string{
 		"ACP_CLIENT_ID":                    jsii.String(props.ClientID),
@@ -252,15 +256,15 @@ func getLocalCode(localPath string) awslambda.Code {
 	)
 }
 
-func getCodeFromS3(stack awscdk.Stack, s3FileName string, s3Version string) awslambda.Code {
+func getCodeFromS3(stack awscdk.Stack, props StackProps, s3FileName string) awslambda.Code {
 	return awslambda.Code_FromBucket(
 		awss3.Bucket_FromBucketName(
 			stack,
-			jsii.String("S3Bucket"),
-			jsii.String(S3BucketName),
+			jsii.String("S3Bucket"+s3FileName),
+			jsii.String(props.S3BucketName),
 		),
 		jsii.String(s3FileName),
-		jsii.String(s3Version),
+		nil,
 	)
 }
 
@@ -387,6 +391,8 @@ func readStackProps(app awscdk.App, props *StackProps) error {
 	props.EnforcementAllowUnknown = readCtxParam[bool](app, "enforcementAllowUnknown")
 	props.HTTPClientRootCA = readCtxParam[string](app, "httpClientRootCA")
 	props.HTTPClientInsecureSkipVerify = readCtxParam[bool](app, "httpClientInsecureSkipVerify")
+	props.S3BucketName = readCtxParam[string](app, "s3BucketName")
+
 	props.StackName = jsii.String(readCtxParam[string](app, "stackName"))
 	return nil
 }
