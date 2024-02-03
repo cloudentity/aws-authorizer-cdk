@@ -22,6 +22,10 @@ LOCAL_CONTEXT_PARAMS =\
 	-c syncZip=$(LOCAL_LAMBDAS_DIR)aws-authorizer-sync.zip  \
 	-c authorizerZip=$(LOCAL_LAMBDAS_DIR)aws-authorizer.zip  $(CONTEXT_PARAMS)
 
+DEMO_CONTEXT_PARAMS =\
+	-c manuallyCreateAuthorizer=true \
+	-c deployDemo=true $(CONTEXT_PARAMS)
+
 .PHONY: deploy
 deploy:
 	@echo "Deploying to AWS..."
@@ -36,3 +40,8 @@ deploy-local-files:
 destroy:
 	@echo "Destroying AWS resources..."
 	cdk destroy $(CONTEXT_PARAMS)
+
+.PHONY: deploy-with-demo-api
+deploy-with-demo-api:
+	@echo "Deploying to AWS with Demo API..."
+	cdk bootstrap $(DEMO_CONTEXT_PARAMS) && cdk deploy $(DEMO_CONTEXT_PARAMS) --all
