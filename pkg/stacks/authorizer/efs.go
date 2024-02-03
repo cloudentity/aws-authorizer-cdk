@@ -8,9 +8,7 @@ import (
 )
 
 func createEFSWithAccessPoint(stack awscdk.Stack, vpc awsec2.IVpc) awsefs.AccessPoint {
-	var fs awsefs.FileSystem
-
-	fs = awsefs.NewFileSystem(stack, jsii.String("AuthorizerConfigurationFileSystem"), &awsefs.FileSystemProps{
+	fs := awsefs.NewFileSystem(stack, jsii.String("AuthorizerConfigurationFileSystem"), &awsefs.FileSystemProps{
 		Vpc: vpc,
 	})
 
