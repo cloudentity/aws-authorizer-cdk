@@ -2,6 +2,10 @@
 
 This project provides CDK deployment for Cloudentity AWS Authorizer.
 
+## Disclaimer
+
+This repository is currently in alpha stage and is subject to change.
+
 ## Prerequisites
 
 - CDK
@@ -46,3 +50,19 @@ LOCAL_LAMBDAS_DIR=xxxxx
 ```
 
 to the directory where your lambdas `.zip` files are.
+
+## IaC
+
+By default, authorizer will get deployed with automatic authorizer creation.
+It will scan all APIs and attach an authorizer to all methods in all APIs.
+
+This is not recommended for production environments, or any environments managed using IaC tools.
+To disable this behaviour, set the context parameter `-c manuallyCreateAuthorizer=true`.
+
+This will disable automated authorizer creation.
+
+## Demo API
+
+If you want to deply a demo API connected to the authorizer, pass `-c deployDemo=true` context param to cdk.
+
+You can also use a helper make target `make deploy-with-demo-api`
