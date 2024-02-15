@@ -19,8 +19,8 @@ CONTEXT_PARAMS = \
 	-c version=$(VERSION)
 
 LOCAL_CONTEXT_PARAMS =\
-	-c syncZip=$(LOCAL_LAMBDAS_DIR)aws-authorizer-sync.zip  \
-	-c authorizerZip=$(LOCAL_LAMBDAS_DIR)aws-authorizer.zip  $(CONTEXT_PARAMS)
+	-c syncZip=$(realpath $(LOCAL_LAMBDAS_DIR))/aws-authorizer-sync.zip  \
+	-c authorizerZip=$(realpath $(LOCAL_LAMBDAS_DIR))/aws-authorizer.zip  $(CONTEXT_PARAMS)
 
 DEMO_CONTEXT_PARAMS =\
 	-c manuallyCreateAuthorizer=true \
