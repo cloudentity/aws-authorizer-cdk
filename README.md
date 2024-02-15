@@ -14,7 +14,7 @@ This repository is currently in alpha stage and is subject to change.
 ## Deploy
 
 Run `make deploy` to deploy the stack using authorizer from S3.
-Run `make deploy-local` to deploy the stack using authorizer from local `.zip` files.
+Run `make deploy-local-files` to deploy the stack using authorizer from local `.zip` files.
 
 ## Set env variables
 
