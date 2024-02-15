@@ -20,7 +20,7 @@ func getCodeFromS3(stack awscdk.Stack, props StackProps, s3FileName string) awsl
 		awss3.Bucket_FromBucketName(
 			stack,
 			jsii.String("S3Bucket"+s3FileName),
-			jsii.String(props.S3BucketName),
+			jsii.String(props.S3BucketName+"-"+*stack.Region()),
 		),
 		jsii.String(s3FileName),
 		nil,

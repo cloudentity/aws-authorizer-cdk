@@ -46,7 +46,7 @@ type StackProps struct {
 var DefaultStackProps = StackProps{
 	LoggingLevel:   "info",
 	ReloadInterval: time.Second * 10,
-	S3BucketName:   "cloudentity-aws-api-gateway-authorizer-us-east-1",
+	S3BucketName:   "cloudentity-aws-api-gateway-authorizer",
 }
 
 func setDefaultStackProps(props *StackProps) {
