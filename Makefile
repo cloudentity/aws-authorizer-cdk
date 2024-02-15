@@ -26,15 +26,20 @@ DEMO_CONTEXT_PARAMS =\
 	-c manuallyCreateAuthorizer=true \
 	-c deployDemo=true $(CONTEXT_PARAMS)
 
+.PHONY: bootstrap
+bootstrap:
+	@echo "Bootstrapping AWS environment..."
+	cdk bootstrap $(CONTEXT_PARAMS)
+
 .PHONY: deploy
 deploy:
 	@echo "Deploying to AWS..."
-	cdk bootstrap $(CONTEXT_PARAMS) && cdk deploy $(CONTEXT_PARAMS)
+	cdk deploy $(CONTEXT_PARAMS)
 
 .PHONY: deploy-local-files
 deploy-local-files:
 	@echo "Deploying to AWS..."
-	cdk bootstrap $(LOCAL_CONTEXT_PARAMS) && cdk deploy $(LOCAL_CONTEXT_PARAMS)
+	cdk deploy $(LOCAL_CONTEXT_PARAMS)
 
 .PHONY: destroy
 destroy:
@@ -44,4 +49,4 @@ destroy:
 .PHONY: deploy-with-demo-api
 deploy-with-demo-api:
 	@echo "Deploying to AWS with Demo API..."
-	cdk bootstrap $(DEMO_CONTEXT_PARAMS) && cdk deploy $(DEMO_CONTEXT_PARAMS) --all
+	cdk deploy $(DEMO_CONTEXT_PARAMS) --all
