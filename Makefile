@@ -8,7 +8,7 @@ HASH   = $(shell git rev-parse HEAD)
 
 STACK_NAME = CloudentityAwsAuthorizer-$(BRANCH)
 
-VERSION = 2.22.0-beta
+VERSION = 2.22.1-beta
 
 .EXPORT_ALL_VARIABLES:
 
