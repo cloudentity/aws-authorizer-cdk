@@ -21,7 +21,7 @@ func createSyncLambda(stack awscdk.Stack, authorizer awslambda.Function, vpc aws
 	if props.SyncZip != "" {
 		code = getLocalCode(props.SyncZip)
 	} else {
-		code = getCodeFromS3(stack, props, "cloudentity-aws-authorizer-v2-sync-"+props.Version+".zip")
+		code = getCodeFromS3(stack, props, props.S3SyncPrefix+props.Version+".zip")
 	}
 	syncLambdaEnvVars := map[string]*string{
 		"ACP_CLIENT_ID":                    jsii.String(props.ClientID),

@@ -22,7 +22,7 @@ func createAuthorizerLambda(stack awscdk.Stack, vpc awsec2.IVpc, efsAP awsefs.Ac
 	if props.AuthorizerZip != "" {
 		code = getLocalCode(props.AuthorizerZip)
 	} else {
-		code = getCodeFromS3(stack, props, "cloudentity-aws-authorizer-v2-"+props.Version+".zip")
+		code = getCodeFromS3(stack, props, props.S3AuthorizerPrefix+props.Version+".zip")
 	}
 
 	env = map[string]*string{

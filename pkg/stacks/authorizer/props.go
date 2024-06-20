@@ -41,12 +41,18 @@ type StackProps struct {
 	HTTPClientInsecureSkipVerify bool
 	// S3BucketName is a name of S3 bucket
 	S3BucketName string
+	// S3AuthorizerPrefix is the file name prefix for authorizer lambda
+	S3AuthorizerPrefix string
+	// S3SyncPrefix is the file name prefix for sync lambda
+	S3SyncPrefix string
 }
 
 var DefaultStackProps = StackProps{
-	LoggingLevel:   "info",
-	ReloadInterval: time.Second * 10,
-	S3BucketName:   "cloudentity-aws-api-gateway-authorizer",
+	LoggingLevel:       "info",
+	ReloadInterval:     time.Second * 10,
+	S3BucketName:       "cloudentity-aws-api-gateway-authorizer",
+	S3AuthorizerPrefix: "cloudentity-aws-authorizer-v2-",
+	S3SyncPrefix:       "cloudentity-aws-authorizer-v2-sync-",
 }
 
 func setDefaultStackProps(props *StackProps) {
