@@ -17,18 +17,22 @@ func NewStack(scope constructs.Construct, id string, authorizerLambda awslambda.
 
 func createAPI(stack awscdk.Stack, authorizerLambdaArn string) {
 	api := awsapigateway.NewRestApi(stack, jsii.String("SampleAPI"), &awsapigateway.RestApiProps{
+		DeployOptions: &awsapigateway.StageOptions{
+			StageName: jsii.String("test"),
+		},
+		DefaultMethodOptions: &awsapigateway.MethodOptions{
+			AuthorizationType: awsapigateway.AuthorizationType_CUSTOM,
+			Authorizer: awsapigateway.NewRequestAuthorizer(stack, jsii.String("SampleAuthorizer"), &awsapigateway.RequestAuthorizerProps{
+				Handler:        awslambda.Function_FromFunctionArn(stack, jsii.String("SampleAuthorizerHandler"), jsii.String(authorizerLambdaArn)),
+				AuthorizerName: jsii.String("CloudentityAWSAuthorizer"),
+				IdentitySources: &[]*string{
+					jsii.String("method.request.header.Authorization"),
+				},
+			}),
+		},
 		RestApiName: jsii.String("SampleAPI"),
 		Description: jsii.String("Sample API"),
 	})
 
-	api.Root().AddMethod(jsii.String("GET"), awsapigateway.NewMockIntegration(&awsapigateway.IntegrationOptions{}), &awsapigateway.MethodOptions{
-		AuthorizationType: awsapigateway.AuthorizationType_CUSTOM,
-		Authorizer: awsapigateway.NewRequestAuthorizer(stack, jsii.String("SampleAuthorizer"), &awsapigateway.RequestAuthorizerProps{
-			Handler:        awslambda.Function_FromFunctionArn(stack, jsii.String("SampleAuthorizerHandler"), jsii.String(authorizerLambdaArn)),
-			AuthorizerName: jsii.String("CloudentityAWSAuthorizer"),
-			IdentitySources: &[]*string{
-				jsii.String("method.request.header.Authorization"),
-			},
-		}),
-	})
+	api.Root().AddMethod(jsii.String("GET"), awsapigateway.NewMockIntegration(&awsapigateway.IntegrationOptions{}), &awsapigateway.MethodOptions{})
 }
