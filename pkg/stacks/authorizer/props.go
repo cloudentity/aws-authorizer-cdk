@@ -24,11 +24,11 @@ type StackProps struct {
 	// VpcID is an id of VPC that will be used to create lambda function
 	VpcID string
 	// Version is a version of lambda function
-	Version string `validate:"omitempty,semver"`
+	Version string `validate:"required"`
 	// LoggingLevel is a logging level of lambda function
 	LoggingLevel string `validate:"omitempty,oneof=debug info warn error"`
 	// ReloadInterval is a reload interval of lambda function
-	ReloadInterval time.Duration `validate:"omitempty,max=1m,min=1s"`
+	ReloadInterval time.Duration `validate:"omitempty,max=1m,min=5s"`
 	// AnalyticsEnabled is a flag that enables analytics
 	AnalyticsEnabled bool
 	// InjectContext is a flag that enables injecting context to the request
@@ -64,6 +64,12 @@ func setDefaultStackProps(props *StackProps) {
 	}
 	if props.S3BucketName == "" {
 		props.S3BucketName = DefaultStackProps.S3BucketName
+	}
+	if props.S3AuthorizerPrefix == "" {
+		props.S3AuthorizerPrefix = DefaultStackProps.S3AuthorizerPrefix
+	}
+	if props.S3SyncPrefix == "" {
+		props.S3SyncPrefix = DefaultStackProps.S3SyncPrefix
 	}
 }
 

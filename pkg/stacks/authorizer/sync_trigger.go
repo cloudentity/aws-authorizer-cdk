@@ -2,6 +2,7 @@ package authorizer
 
 import (
 	"fmt"
+	"time"
 
 	"github.com/aws/aws-cdk-go/awscdk/v2"
 	"github.com/aws/aws-cdk-go/awscdk/v2/awsevents"
@@ -20,6 +21,11 @@ func triggerLambdaInIntervals(stack awscdk.Stack, lambda awslambda.Function, pro
 		stateMachine awsstepfunctions.StateMachine
 	)
 
+	if props.ReloadInterval >= 1*time.Minute {
+		createDirectEventBridgeRule(stack, lambda)
+		return
+	}
+
 	sqsQueue = createSQSQueue(stack)
 	stateMachine = createStateMachine(stack, sqsQueue, props)
 	createEventBridgeRule(stack, stateMachine)
@@ -27,6 +33,13 @@ func triggerLambdaInIntervals(stack awscdk.Stack, lambda awslambda.Function, pro
 	lambda.AddEventSource(awslambdaeventsources.NewSqsEventSource(sqsQueue, &awslambdaeventsources.SqsEventSourceProps{
 		BatchSize: jsii.Number(1),
 	}))
+}
+
+func createDirectEventBridgeRule(stack awscdk.Stack, lambda awslambda.Function) {
+	rule := awsevents.NewRule(stack, jsii.String("Run Sync Lambda"), &awsevents.RuleProps{
+		Schedule: awsevents.Schedule_Rate(awscdk.Duration_Minutes(jsii.Number(EventBridgeTriggerIntervalMinutes))),
+	})
+	rule.AddTarget(awseventstargets.NewLambdaFunction(lambda, &awseventstargets.LambdaFunctionProps{}))
 }
 
 func createSQSQueue(stack awscdk.Stack) awssqs.Queue {
