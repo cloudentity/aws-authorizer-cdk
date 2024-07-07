@@ -4,7 +4,7 @@ This project provides CDK deployment for Cloudentity AWS Authorizer.
 
 ## Disclaimer
 
-This repository is currently in alpha stage and is subject to change.
+This repository is currently in early access stage.
 
 ## Architecture
 
@@ -51,6 +51,9 @@ we're triggering sync lambda with a given interval.
 
 If there's no need to synchronize the state of configuration more often than
 every 1 minute, we've added a simplified synchronization trigger option.
+If you configure `ReloadInterval` prop to a value equal or greater to 1 minute,
+this mechanism is going to be used.
+Note: Sync will happen every minute.
 
 4.1. EventBridge event
 
