@@ -33,7 +33,7 @@ func createSyncLambda(stack awscdk.Stack, authorizer awslambda.Function, vpc aws
 		"HTTP_CLIENT_INSECURE_SKIP_VERIFY": jsii.String(strconv.FormatBool(props.HTTPClientInsecureSkipVerify)),
 		"AWS_LOCAL_CONFIGURATION":          jsii.String(EfsMountPath),
 		"AWS_AUTHORIZER_ARN":               authorizer.FunctionArn(),
-		"AWS_AUTOBIND_AUTHORIZER":          jsii.String(strconv.FormatBool(!props.ManuallyCreateAuthorizer)),
+		"AWS_CREATE_AUTHORIZER":            jsii.String(strconv.FormatBool(!props.ManuallyCreateAuthorizer)),
 		"MAX_HEAP":                         jsii.String(strconv.Itoa(maxHeap)),
 	}
 
@@ -42,7 +42,7 @@ func createSyncLambda(stack awscdk.Stack, authorizer awslambda.Function, vpc aws
 		Handler:                      jsii.String("bootstrap"),
 		Runtime:                      awslambda.Runtime_PROVIDED_AL2023(),
 		MemorySize:                   jsii.Number(128),
-		Timeout:                      awscdk.Duration_Seconds(jsii.Number(10)),
+		Timeout:                      awscdk.Duration_Seconds(jsii.Number(30)),
 		Environment:                  &syncLambdaEnvVars,
 		Vpc:                          vpc,
 		Filesystem:                   awslambda.FileSystem_FromEfsAccessPoint(efsAP, jsii.String(EfsMountPath)),

@@ -6,9 +6,11 @@ include .env
 BRANCH = $(shell git rev-parse --abbrev-ref HEAD)
 HASH   = $(shell git rev-parse HEAD)
 
+ifeq ($(STACK_NAME),)
 STACK_NAME = CloudentityAwsAuthorizer-$(BRANCH)
+endif
 
-VERSION = 2.22.1-beta
+VERSION = 2.22.0-1
 
 .EXPORT_ALL_VARIABLES:
 
@@ -17,6 +19,11 @@ CONTEXT_PARAMS = \
 	-c issuerURL=$(ACP_ISSUER_URL) \
 	-c stackName=$(STACK_NAME) \
 	-c version=$(VERSION)
+
+ifneq ($(LOGGING_LEVEL),)
+	CONTEXT_PARAMS := $(CONTEXT_PARAMS) -c loggingLevel=$(LOGGING_LEVEL)
+endif
+
 
 LOCAL_CONTEXT_PARAMS =\
 	-c syncZip=$(realpath $(LOCAL_LAMBDAS_DIR))/aws-authorizer-sync.zip  \
