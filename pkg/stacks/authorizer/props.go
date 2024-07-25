@@ -29,8 +29,8 @@ type StackProps struct {
 	LoggingLevel string `validate:"omitempty,oneof=debug info warn error"`
 	// ReloadInterval is a reload interval of lambda function
 	ReloadInterval time.Duration `validate:"omitempty,max=1m,min=5s"`
-	// AnalyticsEnabled is a flag that enables analytics
-	AnalyticsEnabled bool
+	// AnalyticsDisabled is a flag that disables analytics
+	AnalyticsDisabled bool
 	// InjectContext is a flag that enables injecting context to the request
 	InjectContext bool
 	// EnforcementAllowUnknown is a flag that enables allowing unknown enforcement

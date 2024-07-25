@@ -26,15 +26,16 @@ func createAuthorizerLambda(stack awscdk.Stack, vpc awsec2.IVpc, efsAP awsefs.Ac
 	}
 
 	env = map[string]*string{
-		"ACP_CLIENT_ID":                    jsii.String(props.ClientID),
-		"ACP_CLIENT_SECRET":                jsii.String(props.ClientSecret),
-		"ACP_ISSUER_URL":                   jsii.String(props.IssuerURL),
-		"LOGGING_LEVEL":                    jsii.String(props.LoggingLevel),
-		"ANALYTICS_ENABLED":                jsii.String(strconv.FormatBool(props.AnalyticsEnabled)),
-		"HTTP_CLIENT_ROOT_CA":              jsii.String(props.HTTPClientRootCA),
-		"HTTP_CLIENT_INSECURE_SKIP_VERIFY": jsii.String(strconv.FormatBool(props.HTTPClientInsecureSkipVerify)),
-		"AWS_LOCAL_CONFIGURATION":          jsii.String(EfsMountPath),
-		"MAX_HEAP":                         jsii.String(strconv.Itoa(maxHeap)),
+		"ACP_CLIENT_ID":                              jsii.String(props.ClientID),
+		"ACP_CLIENT_SECRET":                          jsii.String(props.ClientSecret),
+		"ACP_ISSUER_URL":                             jsii.String(props.IssuerURL),
+		"LOGGING_LEVEL":                              jsii.String(props.LoggingLevel),
+		"ANALYTICS_ENABLED":                          jsii.String(strconv.FormatBool(!props.AnalyticsDisabled)),
+		"HTTP_CLIENT_ROOT_CA":                        jsii.String(props.HTTPClientRootCA),
+		"HTTP_CLIENT_INSECURE_SKIP_VERIFY":           jsii.String(strconv.FormatBool(props.HTTPClientInsecureSkipVerify)),
+		"AWS_LOCAL_CONFIGURATION":                    jsii.String(EfsMountPath),
+		"MAX_HEAP":                                   jsii.String(strconv.Itoa(maxHeap)),
+		"ENFORCEMENT_CLIENT_CERTIFICATE_HEADER_NAME": jsii.String("X-SSL-CERTIFICATE"),
 	}
 
 	lambda = awslambda.NewFunction(stack, jsii.String("AuthorizerLambda"), &awslambda.FunctionProps{

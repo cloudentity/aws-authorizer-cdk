@@ -69,7 +69,7 @@ func readStackProps(app awscdk.App, props *authorizer.StackProps) error {
 			return fmt.Errorf("invalid reloadInterval duration %w", err)
 		}
 	}
-	props.AnalyticsEnabled = readBoolCtxParam(app, "analyticsEnabled")
+	props.AnalyticsDisabled = readBoolCtxParam(app, "analyticsDisabled")
 	props.InjectContext = readBoolCtxParam(app, "injectContext")
 	props.EnforcementAllowUnknown = readBoolCtxParam(app, "enforcementAllowUnknown")
 	props.HTTPClientRootCA = readCtxParam(app, "httpClientRootCA")

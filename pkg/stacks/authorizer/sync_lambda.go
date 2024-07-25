@@ -28,7 +28,7 @@ func createSyncLambda(stack awscdk.Stack, authorizer awslambda.Function, vpc aws
 		"ACP_CLIENT_SECRET":                jsii.String(props.ClientSecret),
 		"ACP_ISSUER_URL":                   jsii.String(props.IssuerURL),
 		"LOGGING_LEVEL":                    jsii.String(props.LoggingLevel),
-		"ANALYTICS_ENABLED":                jsii.String(strconv.FormatBool(props.AnalyticsEnabled)),
+		"ANALYTICS_ENABLED":                jsii.String(strconv.FormatBool(!props.AnalyticsDisabled)),
 		"HTTP_CLIENT_ROOT_CA":              jsii.String(props.HTTPClientRootCA),
 		"HTTP_CLIENT_INSECURE_SKIP_VERIFY": jsii.String(strconv.FormatBool(props.HTTPClientInsecureSkipVerify)),
 		"AWS_LOCAL_CONFIGURATION":          jsii.String(EfsMountPath),
