@@ -45,6 +45,7 @@ func createDirectEventBridgeRule(stack awscdk.Stack, lambda awslambda.Function) 
 func createSQSQueue(stack awscdk.Stack) awssqs.Queue {
 	deadLetterQueue := awssqs.NewQueue(stack, jsii.String("DeadLetterQueue"), &awssqs.QueueProps{
 		RetentionPeriod: awscdk.Duration_Minutes(jsii.Number(1)),
+		RemovalPolicy:   awscdk.RemovalPolicy_DESTROY,
 	})
 
 	return awssqs.NewQueue(stack, jsii.String("SQSQueue"), &awssqs.QueueProps{
@@ -53,6 +54,7 @@ func createSQSQueue(stack awscdk.Stack) awssqs.Queue {
 			Queue:           deadLetterQueue,
 			MaxReceiveCount: jsii.Number(1),
 		},
+		RemovalPolicy: awscdk.RemovalPolicy_DESTROY,
 	})
 }
 
@@ -77,6 +79,7 @@ func createStateMachine(stack awscdk.Stack, queue awssqs.Queue, props StackProps
 
 	return awsstepfunctions.NewStateMachine(stack, jsii.String("Sync Looper"), &awsstepfunctions.StateMachineProps{
 		DefinitionBody: awsstepfunctions.ChainDefinitionBody_FromChainable(definition),
+		RemovalPolicy:  awscdk.RemovalPolicy_DESTROY,
 	})
 }
 
@@ -85,4 +88,5 @@ func createEventBridgeRule(stack awscdk.Stack, syncLooper awsstepfunctions.State
 		Schedule: awsevents.Schedule_Rate(awscdk.Duration_Minutes(jsii.Number(EventBridgeTriggerIntervalMinutes))),
 	})
 	rule.AddTarget(awseventstargets.NewSfnStateMachine(syncLooper, &awseventstargets.SfnStateMachineProps{}))
+	rule.ApplyRemovalPolicy(awscdk.RemovalPolicy_DESTROY)
 }

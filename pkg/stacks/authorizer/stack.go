@@ -56,7 +56,8 @@ func getVpc(stack awscdk.Stack, vpcID string) awsec2.IVpc {
 		return awsec2.Vpc_FromLookup(stack, jsii.String("VPC"), &awsec2.VpcLookupOptions{
 			VpcId: jsii.String(vpcID),
 		})
-	} else {
-		return awsec2.NewVpc(stack, jsii.String("VPC"), &awsec2.VpcProps{})
-	}
+	} 
+	vpc := awsec2.NewVpc(stack, jsii.String("VPC"), &awsec2.VpcProps{})
+	vpc.ApplyRemovalPolicy(awscdk.RemovalPolicy_DESTROY)
+	return vpc
 }
