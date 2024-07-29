@@ -8,11 +8,18 @@ import (
 )
 
 func createEFSWithAccessPoint(stack awscdk.Stack, vpc awsec2.IVpc) awsefs.AccessPoint {
-	fs := awsefs.NewFileSystem(stack, jsii.String("AuthorizerConfigurationFileSystem"), &awsefs.FileSystemProps{
-		Vpc: vpc,
+
+	var (
+		fs awsefs.FileSystem
+		ap awsefs.AccessPoint
+	)
+
+	fs = awsefs.NewFileSystem(stack, jsii.String("AuthorizerConfigurationFileSystem"), &awsefs.FileSystemProps{
+		Vpc:           vpc,
+		RemovalPolicy: awscdk.RemovalPolicy_DESTROY,
 	})
 
-	return fs.AddAccessPoint(jsii.String("EFSAccessPoint"), &awsefs.AccessPointOptions{
+	ap = fs.AddAccessPoint(jsii.String("EFSAccessPoint"), &awsefs.AccessPointOptions{
 		Path: jsii.String(EfsApPath),
 		CreateAcl: &awsefs.Acl{
 			OwnerGid:    jsii.String("1001"), // Using POSIX user and group
@@ -24,4 +31,7 @@ func createEFSWithAccessPoint(stack awscdk.Stack, vpc awsec2.IVpc) awsefs.Access
 			Gid: jsii.String("1001"),
 		},
 	})
+	ap.ApplyRemovalPolicy(awscdk.RemovalPolicy_DESTROY)
+
+	return ap
 }
