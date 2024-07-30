@@ -48,7 +48,7 @@ func createSQSQueue(stack awscdk.Stack) awssqs.Queue {
 	})
 
 	return awssqs.NewQueue(stack, jsii.String("SQSQueue"), &awssqs.QueueProps{
-		VisibilityTimeout: awscdk.Duration_Seconds(jsii.Number(10)),
+		VisibilityTimeout: awscdk.Duration_Seconds(jsii.Number(30)),
 		DeadLetterQueue: &awssqs.DeadLetterQueue{
 			Queue:           deadLetterQueue,
 			MaxReceiveCount: jsii.Number(1),
