@@ -10,7 +10,7 @@ ifeq ($(STACK_NAME),)
 STACK_NAME = CloudentityAwsAuthorizer-$(BRANCH)
 endif
 
-VERSION = 2.22.0-1
+VERSION = 2.22.0
 
 .EXPORT_ALL_VARIABLES:
 
