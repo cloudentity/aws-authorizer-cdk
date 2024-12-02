@@ -34,6 +34,7 @@ func createSyncLambda(stack awscdk.Stack, authorizer awslambda.Function, vpc aws
 		"AWS_LOCAL_CONFIGURATION":          jsii.String(EfsMountPath),
 		"AWS_AUTHORIZER_ARN":               authorizer.FunctionArn(),
 		"AWS_CREATE_AUTHORIZER":            jsii.String(strconv.FormatBool(!props.ManuallyCreateAuthorizer)),
+		"AWS_AUTHORIZER_NAME":              jsii.String(props.AuthorizerName),
 		"MAX_HEAP":                         jsii.String(strconv.Itoa(maxHeap)),
 	}
 

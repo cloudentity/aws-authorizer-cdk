@@ -55,6 +55,7 @@ func readStackProps(app awscdk.App, props *authorizer.StackProps) error {
 	props.SyncZip = readCtxParam(app, "syncZip")
 	props.AuthorizerZip = readCtxParam(app, "authorizerZip")
 	props.ManuallyCreateAuthorizer = readBoolCtxParam(app, "manuallyCreateAuthorizer")
+	props.AuthorizerName = readCtxParam(app, "authorizerName")
 	props.ClientID = readCtxParam(app, "clientID")
 	// read secret from env var
 	props.ClientSecret = getEnvFromVars("ACP_CLIENT_SECRET")

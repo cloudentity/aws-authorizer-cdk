@@ -15,6 +15,8 @@ type StackProps struct {
 	AuthorizerZip string
 	// When ManuallyCreateAuthorizer is set to true, the stack will configure sync lambda to skip auto-binding authorizer
 	ManuallyCreateAuthorizer bool
+	// Name of the created authorizer, used during sync when checking if the authorizer already exists
+	AuthorizerName string
 	// ClientID is a client id of the client that will be used to authenticate with ACP
 	ClientID string `validate:"required"`
 	// ClientSecret is a client secret of the client that will be used to authenticate with ACP
